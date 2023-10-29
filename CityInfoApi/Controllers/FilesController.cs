@@ -15,7 +15,7 @@ public class FilesController : ControllerBase
     
     [HttpGet]
     [Route("{id}")]
-    public IActionResult GetFile(string id)
+    public IActionResult GetFile([FromRoute]string id)
     {
         // file class is defined in ControllerBase class
         var filePath = "creating-the-api-and-returning-resources-slides.pdf";
@@ -24,6 +24,7 @@ public class FilesController : ControllerBase
         }
         if (!_fileExtensionContentTypeProvider.TryGetContentType(filePath,out var contentType))
         {
+            // the default type for all binary data
             contentType = "application/octet-stream";
         }
         var bytes = System.IO.File.ReadAllBytes(filePath);

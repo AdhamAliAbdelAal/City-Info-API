@@ -7,14 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = true;
-}).AddXmlDataContractSerializerFormatters();
+})
+    .AddNewtonsoftJson() // this replace the default JSON serializer with Newtonsoft.Json
+    .AddXmlDataContractSerializerFormatters();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 // the next two services are required for Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//to inference the content type of files
+//to infer the content type of files
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 
 var app = builder.Build();
