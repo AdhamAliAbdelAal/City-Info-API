@@ -8,12 +8,21 @@ namespace CityInfoApi.Controllers;
 [Route("api/cities/{cityId}/[controller]")]
 public class PointsOfInterestController : Controller
 {
+    
+    private ILogger<PointsOfInterestController> _logger;
+    public PointsOfInterestController(ILogger<PointsOfInterestController> logger)
+    {
+        _logger = logger;
+    }
     [HttpGet]
     public ActionResult<PointsOfInterestResponseDto> GetPointsOfInterest([FromRoute]int cityId)
     {
         var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
         if (city == null)
+        {
+            _logger.LogInformation($"City with id {cityId} wasn't found when accessing points of interest.");
             return NotFound();
+        }
         return Ok(new PointsOfInterestResponseDto(city.PointsOfInterest));
     }
 
