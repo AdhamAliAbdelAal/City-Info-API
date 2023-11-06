@@ -16,5 +16,5 @@ public class CityDbModel
     [MaxLength(200)]
     public string Description { set; get; }
 
-    public List<PointOfInterestDbModel> PointsOfInterest;
+    public List<PointOfInterestDbModel> PointsOfInterest { get; set; }
 }

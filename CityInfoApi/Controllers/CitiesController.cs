@@ -1,4 +1,6 @@
-﻿using CityInfoApi.DTOs;
+﻿using AutoMapper;
+using CityInfoApi.DTOs;
+using CityInfoApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfoApi.Controllers;
@@ -7,10 +9,20 @@ namespace CityInfoApi.Controllers;
 [Route("api/[controller]")]
 public class CitiesController: Controller
 {
-    [HttpGet]
-    public ActionResult<CitiesResponseDto> GetCities()
+    private readonly ICityInfoRepository _cityInfoRepository;
+    private readonly IMapper _mapper;
+    
+    public CitiesController(ICityInfoRepository cityInfoRepository, IMapper mapper)
     {
-        return Ok(new CitiesResponseDto(CitiesDataStore.Current.Cities));
+        _cityInfoRepository = cityInfoRepository;
+        _mapper = mapper;
+    }
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<CityDto>>> GetCities()
+    {
+        var cities = await _cityInfoRepository.GetCitiesAsync();
+        var citiesDto = _mapper.Map<IEnumerable<CityDto>>(cities);
+        return Ok(citiesDto);
     }
     
     [HttpGet]

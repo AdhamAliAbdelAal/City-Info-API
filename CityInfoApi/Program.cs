@@ -1,5 +1,5 @@
-using System.Runtime.InteropServices;
 using CityInfoApi.DbContexts;
+using CityInfoApi.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -42,7 +42,10 @@ builder.Services.AddSwaggerGen();
 
 //to infer the content type of files
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
+builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+// AppDomain.CurrentDomain.GetAssemblies() this line is used to get all the assemblies in the curr
 
 builder.Services.AddDbContext<CityInfoDbContext>(options =>
     options.UseSqlite(builder.Configuration["ConnectionStrings:CityInfoDbContextConnection"] ?? string.Empty));
@@ -72,3 +75,11 @@ app.UseEndpoints(endpoints =>
 });
 
 app.Run();
+
+/*
+Concrete Types Injection: Use this approach when you have a fixed, well-defined implementation of a dependency that is unlikely to change, and you want a simple and direct way to create the object. It's often suitable for smaller applications or components where you don't need the flexibility of switching implementations.
+
+Interface Injection: Use this approach when you want to decouple your code, improve testability, and make it easier to switch implementations of dependencies. It's especially useful in larger applications where you need to manage and configure the relationships between components dynamically. Interface injection is a fundamental concept in Inversion of Control (IoC) containers, which are widely used in complex and scalable software systems.
+
+In practice, many software projects use a combination of both approaches, applying concrete types injection for certain components and interface injection for more flexible and dynamic parts of the system, depending on the specific requirements and design goals.
+ */
