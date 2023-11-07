@@ -1,4 +1,5 @@
-﻿using CityInfoApi.Models;
+﻿using CityInfoApi.DTOs;
+using CityInfoApi.Models;
 
 namespace CityInfoApi.Services;
 
@@ -12,7 +13,15 @@ public interface ICityInfoRepository
     
     Task<CityDbModel?> GetCityAsync(int cityId, bool includePointsOfInterest);
     
-    Task<IEnumerable<PointOfInterestDbModel>> GetPointsOfInterestForCityAsync(int cityId);
+    Task<IEnumerable<PointOfInterestDbModel>?> GetPointsOfInterestForCityAsync(int cityId);
     
     Task<PointOfInterestDbModel?> GetPointOfInterestForCityAsync(int cityId, int pointOfInterestId);
+    
+    Task<bool> CityExistsAsync(int cityId);
+    
+    Task<PointOfInterestDbModel?> AddPointOfInterestAsync(int cityId, PointOfInterestDbModel pointOfInterest);
+    
+    Task<bool> DeletePointOfInterest(int pointOfInterestId);
+    
+    Task<bool> SaveChangesAsync();
 }

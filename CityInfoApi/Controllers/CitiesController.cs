@@ -27,11 +27,12 @@ public class CitiesController: Controller
     
     [HttpGet]
     [Route("{id}")]
-    public ActionResult<CityDto> GetCity([FromRoute]int id)
+    public async Task<ActionResult<CityDto>> GetCity([FromRoute]int id,[FromQuery]bool includePointsOfInterest = false)
     {
-        var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id); 
+        var city = await _cityInfoRepository.GetCityAsync(id, includePointsOfInterest);
         if (city == null)
             return NotFound();
-        return Ok(city);
+        var cityDto = _mapper.Map<CityDto>(city);
+        return Ok(cityDto);
     }
 }
