@@ -18,9 +18,9 @@ public class CitiesController: Controller
         _mapper = mapper;
     }
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CityDto>>> GetCities()
+    public async Task<ActionResult<IEnumerable<CityDto>>> GetCities([FromQuery]string?name, [FromQuery] string? searchQuery, [FromQuery] bool includePointsOfInterest=false, [FromQuery]int page = 1,[FromQuery]int limit = 10)
     {
-        var cities = await _cityInfoRepository.GetCitiesAsync();
+        var cities = await _cityInfoRepository.GetCitiesAsync(name,searchQuery,includePointsOfInterest,page,limit);
         var citiesDto = _mapper.Map<IEnumerable<CityDto>>(cities);
         return Ok(citiesDto);
     }

@@ -11,10 +11,32 @@ public class CityInfoRepository : ICityInfoRepository
     {
         _cityInfoDbContext = cityInfoDbContext;
     }
-    public async Task<IEnumerable<CityDbModel>> GetCitiesAsync()
+    public async Task<IEnumerable<CityDbModel>> GetCitiesAsync(string? name,string? searchQuery, bool includePointsOfInterest,int page, int limit)
     {
-        var cities = _cityInfoDbContext.Cities.Include(c => c.PointsOfInterest).OrderBy(c => c.Name).ToListAsync();
-        return await cities;
+        var query = _cityInfoDbContext.Cities as IQueryable<CityDbModel>;
+        if (includePointsOfInterest)
+        {
+            query = query.Include(c => c.PointsOfInterest);
+        }
+        if (!string.IsNullOrEmpty(name))
+        { 
+            name=name.Trim();
+            query= query.Where(c => c.Name == name);
+        }
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            searchQuery = searchQuery.Trim();
+            query = query.Where(c =>
+                c.Name.Contains(searchQuery) || (c.Description != null && c.Description.Contains(searchQuery)));
+        }
+
+        int skip = (page - 1) * limit;
+        var cities = await query
+            .Skip(skip)
+            .Take(limit)
+            .OrderBy(c =>c.Name).ToListAsync();
+        return cities;
     }
 
     public async Task<CityDbModel?> GetCityAsync(int cityId, bool includePointsOfInterest)
