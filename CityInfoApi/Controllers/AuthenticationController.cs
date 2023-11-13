@@ -19,7 +19,7 @@ public class AuthenticationController : Controller
         public string City { get; set; } = string.Empty;
     }
 
-    private CityInfoUser ValidateUserInfo(string? username, string? password)
+    private CityInfoUser? ValidateUserInfo(string? username, string? password)
     {
         // we don't have a user DB or table.  If you have, check the passed-through
         // username/password against what's stored in the database.
@@ -43,8 +43,9 @@ public class AuthenticationController : Controller
         var claims = new List<Claim>()
         {
             new Claim("sub", user.Username),
+            // sub is the subject of the token, which is the user that the token represents
             new Claim("id", user.Id.ToString()),
-            new Claim("name", user.Name),
+            new Claim("name", user.Username),
             new Claim("city", user.City)
         };
         var token = new JwtSecurityToken(
@@ -68,7 +69,7 @@ public class AuthenticationController : Controller
     
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult<string>> Login([FromBody] AuthenticationRequestDto request)
+    public ActionResult<string> Login([FromBody] AuthenticationRequestDto request)
     {
         // Step1: validate the user credentials
         var user = ValidateUserInfo(request.Username, request.Password);

@@ -63,6 +63,16 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MustBeAdham", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        // add policy to check if the sub claim is equal to adham
+        policy.RequireClaim("name", "adham");
+    });
+});
+
 builder.Services.AddDbContext<CityInfoDbContext>(options =>
     options.UseSqlite(builder.Configuration["ConnectionStrings:CityInfoDbContextConnection"] ?? string.Empty));
 var app = builder.Build();
