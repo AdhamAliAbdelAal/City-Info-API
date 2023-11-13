@@ -1,7 +1,9 @@
+using System.Text;
 using CityInfoApi.DbContexts;
 using CityInfoApi.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -47,6 +49,20 @@ builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // AppDomain.CurrentDomain.GetAssemblies() this line is used to get all the assemblies in the curr
 
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateIssuerSigningKey = true,
+            ValidAudience = builder.Configuration["Authentication:Audience"],
+            ValidIssuer = builder.Configuration["Authentication:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:SecretForKey"]??string.Empty))
+        };
+    });
+
 builder.Services.AddDbContext<CityInfoDbContext>(options =>
     options.UseSqlite(builder.Configuration["ConnectionStrings:CityInfoDbContextConnection"] ?? string.Empty));
 var app = builder.Build();
@@ -67,6 +83,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 //useRouting is a middleware that sets up routing for the application.
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
@@ -83,3 +100,11 @@ Interface Injection: Use this approach when you want to decouple your code, impr
 
 In practice, many software projects use a combination of both approaches, applying concrete types injection for certain components and interface injection for more flexible and dynamic parts of the system, depending on the specific requirements and design goals.
  */
+ 
+ /*
+the UseRouting() is the middleware that matches the url to an endpoint.
+
+the UseEndpoints() is the middleware that actually executes the matched endpoint.
+
+so any middleware after the UseRouting() and before UseEndpoints() can access the route data ( the controller name, action, etc) and will run before the endpoint.
+  */

@@ -2,6 +2,7 @@
 using CityInfoApi.DTOs;
 using CityInfoApi.Models;
 using CityInfoApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace CityInfoApi.Controllers;
 
 [ApiController]
 [Route("api/cities/{cityId}/[controller]")]
+[Authorize]
 public class PointsOfInterestController : Controller
 {
     
